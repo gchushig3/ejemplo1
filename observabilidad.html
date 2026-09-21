@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Panel de observabilidad y métricas locales para el sitio web tributo a Cristiano Ronaldo (CR7). Análisis de rendimiento, clics y errores 100% privado en el navegador.">
+  <meta name="author" content="CR7 Observability Suite">
+  <title>Observabilidad Local | Cristiano Ronaldo (CR7)</title>
+
+  <!-- Tipografías optimizadas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos del Dashboard -->
+  <link rel="stylesheet" href="observabilidad.css">
+</head>
+<body>
+  <!-- Enlace accesible de salto al contenido -->
+  <a href="#contenido-dashboard" class="skip-link">Saltar al contenido del panel</a>
+
+  <!-- Encabezado del Dashboard -->
+  <header class="dashboard-header">
+    <div class="container dashboard-nav-container">
+      <a href="index.html" class="dashboard-brand" aria-label="Volver a la página principal de Cristiano Ronaldo">
+        <span class="brand-badge">CR7</span>
+        <span>Observabilidad Local</span>
+      </a>
+
+      <div class="header-links">
+        <a href="index.html" class="btn-back" aria-label="Ir a la página principal de Cristiano Ronaldo">
+          &larr; Volver al Sitio Principal
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Barra de Acciones y Estado -->
+  <section class="dashboard-actions-section" aria-label="Controles principales del panel">
+    <div class="container actions-container">
+      <div class="dashboard-title-group">
+        <h1>
+          Panel de Telemetría
+          <span class="privacy-badge">100% Local y Privado</span>
+        </h1>
+        <p class="dashboard-desc">
+          Métricas de carga, interacciones, errores y entorno registradas exclusivamente en tu navegador mediante <code>localStorage</code>.
+        </p>
+      </div>
+
+      <div class="actions-toolbar" role="toolbar" aria-label="Acciones de observabilidad">
+        <button type="button" id="btn-refresh" class="btn-action btn-refresh" aria-label="Actualizar datos recolectados">
+          🔄 Actualizar Datos
+        </button>
+
+        <button type="button" id="btn-demo" class="btn-action btn-demo" aria-label="Generar un evento y aviso de demostración">
+          ⚡ Generar Evento Demo
+        </button>
+
+        <button type="button" id="btn-download" class="btn-action btn-download" aria-label="Descargar snapshot en formato JSON">
+          📥 Descargar Snapshot (JSON)
+        </button>
+
+        <button type="button" id="btn-clear" class="btn-action btn-clear" aria-label="Limpiar todo el almacenamiento local de observabilidad">
+          🗑️ Limpiar Almacenamiento
+        </button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="status-bar">
+        <span>Clave de almacenamiento: <strong class="storage-key-pill">cr7-observability-store</strong></span>
+        <span>Última actualización: <strong id="last-updated">Cargando...</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenido Principal del Dashboard -->
+  <main id="contenido-dashboard" class="dashboard-main container">
+    <div id="dashboard-app">
+      
+      <!-- 1. Tarjetas KPI de Resumen -->
+      <section aria-label="Resumen de indicadores clave" class="kpi-grid">
+        <!-- KPI 1 -->
+        <article class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Eventos Registrados</span>
+            <span class="kpi-icon" aria-hidden="true">👆</span>
+          </div>
+          <p class="kpi-value" id="kpi-events">0</p>
+          <p class="kpi-sub">Clics en botones, enlaces y navegación</p>
+        </article>
+
+        <!-- KPI 2 -->
+        <article class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Errores Detectados</span>
+            <span class="kpi-icon" aria-hidden="true">⚠️</span>
+          </div>
+          <p class="kpi-value" id="kpi-errors">0</p>
+          <p class="kpi-sub">Scripts, promesas y recursos fallidos</p>
+        </article>
+
+        <!-- KPI 3 -->
+        <article class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Tiempo de Carga</span>
+            <span class="kpi-icon" aria-hidden="true">⏱️</span>
+          </div>
+          <p class="kpi-value" id="kpi-load-time">--</p>
+          <p class="kpi-sub">Medido con Navigation Timing API</p>
+        </article>
+
+        <!-- KPI 4 -->
+        <article class="kpi-card">
+          <div class="kpi-header">
+            <span class="kpi-title">Estado de Pestaña</span>
+            <span class="kpi-icon" aria-hidden="true">👁️</span>
+          </div>
+          <p class="kpi-value status-indicator" id="kpi-visibility">
+            <span class="status-dot"></span> Activa
+          </p>
+          <p class="kpi-sub">Page Visibility API en tiempo real</p>
+        </article>
+      </section>
+
+      <!-- 2. Rendimiento y Entorno (2 columnas) -->
+      <div class="panels-grid panels-grid-2col">
+        
+        <!-- Panel de Rendimiento -->
+        <section class="panel-card" aria-labelledby="perf-title">
+          <div class="panel-header">
+            <h2 id="perf-title" class="panel-title">
+              <span aria-hidden="true">🚀</span> Tiempos de Carga (Performance API)
+            </h2>
+            <span class="panel-badge">W3C Navigation Timing</span>
+          </div>
+
+          <div class="panel-table-wrapper">
+            <table class="metric-table" aria-label="Métricas de rendimiento de navegación y pintura">
+              <caption class="sr-only">Desglose de tiempos de conexión, respuesta del servidor y renderizado inicial</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Fase de Carga</th>
+                  <th scope="col">Duración Estimada</th>
+                </tr>
+              </thead>
+              <tbody id="perf-table-body">
+                <tr><td colspan="2">Cargando métricas de rendimiento...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Panel de Entorno y Conexión -->
+        <section class="panel-card" aria-labelledby="env-title">
+          <div class="panel-header">
+            <h2 id="env-title" class="panel-title">
+              <span aria-hidden="true">💻</span> Entorno, Viewport y Red
+            </h2>
+            <span class="panel-badge">Dispositivo Actual</span>
+          </div>
+
+          <div class="panel-table-wrapper">
+            <table class="metric-table" aria-label="Información sobre viewport, pantalla y conexión de red">
+              <caption class="sr-only">Propiedades del viewport y conexión detectadas en el navegador</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Parámetro</th>
+                  <th scope="col">Valor Detectado</th>
+                </tr>
+              </thead>
+              <tbody id="env-table-body">
+                <tr><td colspan="2">Detectando especificaciones del entorno...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- 3. Compatibilidad de APIs y Registro de Errores -->
+      <div class="panels-grid panels-grid-2col">
+        
+        <!-- Panel Soporte de APIs -->
+        <section class="panel-card" aria-labelledby="api-title">
+          <div class="panel-header">
+            <h2 id="api-title" class="panel-title">
+              <span aria-hidden="true">🧩</span> Soporte de APIs del Navegador
+            </h2>
+            <span class="panel-badge">Capacidades Web</span>
+          </div>
+
+          <div class="panel-table-wrapper">
+            <table class="metric-table" aria-label="Soporte de APIs modernas de JavaScript en este navegador">
+              <caption class="sr-only">Listado de APIs web requeridas y su disponibilidad en la sesión actual</caption>
+              <thead>
+                <tr>
+                  <th scope="col">API / Tecnología</th>
+                  <th scope="col">Disponibilidad</th>
+                </tr>
+              </thead>
+              <tbody id="api-badges-container">
+                <tr><td colspan="2">Analizando compatibilidad de APIs...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Panel Errores Detectados -->
+        <section class="panel-card" aria-labelledby="errors-title">
+          <div class="panel-header">
+            <h2 id="errors-title" class="panel-title">
+              <span aria-hidden="true">🛡️</span> Registro de Errores y Excepciones
+            </h2>
+            <span class="panel-badge">JavaScript & Recursos</span>
+          </div>
+
+          <ul id="errors-list" class="log-feed" aria-label="Historial de errores capturados">
+            <li class="empty-state">Comprobando errores...</li>
+          </ul>
+        </section>
+
+      </div>
+
+      <!-- 4. Registro de Actividad y Clics -->
+      <section class="panel-card" aria-labelledby="events-title" style="margin-bottom: 2.5rem;">
+        <div class="panel-header">
+          <h2 id="events-title" class="panel-title">
+            <span aria-hidden="true">🖱️</span> Flujo de Clics e Interacciones Recientes
+          </h2>
+          <span class="panel-badge">Últimos eventos</span>
+        </div>
+
+        <ul id="events-list" class="log-feed" aria-label="Listado de clics capturados">
+          <li class="empty-state">Esperando interacciones...</li>
+        </ul>
+      </section>
+
+      <!-- 5. Snapshot JSON Crudo -->
+      <section class="panel-card" aria-labelledby="raw-title">
+        <div class="panel-header">
+          <h2 id="raw-title" class="panel-title">
+            <span aria-hidden="true">📦</span> Inspección de Snapshot JSON (window.CR7Observability.getSnapshot())
+          </h2>
+          <span class="panel-badge">JSON Formateado</span>
+        </div>
+        <p class="dashboard-desc" style="margin-bottom: 0.75rem;">
+          Objeto inmutable retornado por la función global <code>window.CR7Observability.getSnapshot()</code> para depuración o auditoría:
+        </p>
+
+        <div class="json-viewer-wrapper">
+          <pre class="json-code-block"><code id="raw-json-viewer">// Cargando snapshot JSON...</code></pre>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Pie de página del Dashboard -->
+  <footer class="dashboard-footer">
+    <div class="container">
+      <p>
+        <strong>CR7 Observabilidad Local</strong> &bull; Datos almacenados exclusivamente en el navegador local mediante <code>localStorage</code>.
+      </p>
+      <p>Sin rastreadores, sin cookies de terceros, sin servidores externos. Privacidad garantizada.</p>
+      <p><a href="index.html">&larr; Regresar al sitio principal de Cristiano Ronaldo</a></p>
+    </div>
+  </footer>
+
+  <!-- Script de Observabilidad y Dashboard -->
+  <script src="observabilidad.js"></script>
+</body>
+</html>
